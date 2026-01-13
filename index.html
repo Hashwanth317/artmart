@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ArtMart — Artist Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" onclick="goHome()">
+        <div class="brand-badge">A</div>
+        <div>
+          <div class="brand-name">ArtMart</div>
+          <div class="brand-sub">Artist Canvas Store</div>
+        </div>
+      </div>
+
+      <div class="search" role="search">
+        <select id="searchCategory" aria-label="Category">
+          <option value="all">All</option>
+          <option value="Abstract">Abstract</option>
+          <option value="Nature">Nature</option>
+          <option value="Portrait">Portrait</option>
+          <option value="Minimal">Minimal</option>
+        </select>
+        <input id="searchInput" placeholder="Search paintings, styles, sizes…" />
+        <button id="searchBtn" title="Search">🔎</button>
+      </div>
+
+      <div class="nav-actions">
+        <div class="nav-item" onclick="scrollToSection('about')">
+          <small>Hello</small>
+          <strong>About Artist</strong>
+        </div>
+        <div class="nav-item" onclick="scrollToSection('orders')">
+          <small>Returns</small>
+          <strong>& Orders</strong>
+        </div>
+        <div class="cart-btn" onclick="openCart()">
+          <span class="cart-icon">🛒<span id="cartCount" class="cart-count">0</span></span>
+          <div>
+            <small>Cart</small>
+            <strong id="cartTotalTiny">₹0</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subbar">
+      <div class="subbar-inner">
+        <div class="burger" onclick="toggleSidebarMobile()">☰ All</div>
+        <div class="pill active" data-pill="All" onclick="quickFilter('All', this)">All Deals</div>
+        <div class="pill" data-pill="Abstract" onclick="quickFilter('Abstract', this)">Abstract</div>
+        <div class="pill" data-pill="Nature" onclick="quickFilter('Nature', this)">Nature</div>
+        <div class="pill" data-pill="Portrait" onclick="quickFilter('Portrait', this)">Portrait</div>
+        <div class="pill" data-pill="Minimal" onclick="quickFilter('Minimal', this)">Minimal</div>
+        <div class="pill" data-pill="New" onclick="quickFilter('New', this)">New Arrivals</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap" id="home">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="side-head">
+        <h3>Filters</h3>
+        <button class="btn" onclick="resetFilters()">Reset</button>
+      </div>
+
+      <div class="side-section">
+        <h4>Categories</h4>
+        <label class="check"><input type="checkbox" value="Abstract" class="catCheck"> Abstract</label>
+        <label class="check"><input type="checkbox" value="Nature" class="catCheck"> Nature</label>
+        <label class="check"><input type="checkbox" value="Portrait" class="catCheck"> Portrait</label>
+        <label class="check"><input type="checkbox" value="Minimal" class="catCheck"> Minimal</label>
+      </div>
+
+      <div class="side-section">
+        <h4>Price</h4>
+        <div class="range">
+          <input type="range" id="priceMax" min="500" max="25000" value="25000" step="100">
+          <div class="row">
+            <span>₹500</span>
+            <span id="priceMaxLabel">₹25000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <h4>Size</h4>
+        <label class="check"><input type="checkbox" value="Small" class="sizeCheck"> Small (8x10, 10x12)</label>
+        <label class="check"><input type="checkbox" value="Medium" class="sizeCheck"> Medium (12x16, 16x20)</label>
+        <label class="check"><input type="checkbox" value="Large" class="sizeCheck"> Large (24x36, 30x40)</label>
+      </div>
+
+      <div class="side-section">
+        <h4>Extras</h4>
+        <label class="check"><input type="checkbox" value="Framed" class="extraCheck"> Framed</label>
+        <label class="check"><input type="checkbox" value="New" class="extraCheck"> New Arrivals</label>
+        <label class="check"><input type="checkbox" value="Prime" class="extraCheck"> Fast Delivery</label>
+      </div>
+
+      <div class="side-section">
+        <button class="btn primary" onclick="applyFilters()">Apply Filters</button>
+        <div class="small" style="margin-top:8px;">
+          Tip: Replace the sample products in the JS array with Harini's real artworks.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main>
+      <section class="hero" id="about">
+        <div>
+          <h2>Discover original canvas art from a real artist</h2>
+          <p>
+            Shop limited-edition paintings, custom commissions, and framed canvas pieces.
+            Add items to cart, checkout, and manage orders like an Amazon-style store.
+          </p>
+          <div class="tag">Free packaging • COD optional • Custom sizes available</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="small">Seller</div>
+          <div style="font-weight:800; font-size:16px;">Harini — Artist &amp; Founder</div>
+          <div class="small">Ships in 2–5 days • Hand-signed</div>
+          <div class="signature">— Harini</div>
+        </div>
+      </section>
+
+      <section style="margin-top:14px;">
+        <div class="small" style="margin:6px 0 10px 2px;">
+          Showing <span id="resultCount">0</span> results
+        </div>
+        <div class="grid" id="productGrid"></div>
+      </section>
+
+      <section id="orders" style="margin-top:14px;">
+        <div class="hero">
+          <div>
+            <h2>Orders (Demo)</h2>
+            <p>
+              This is a front-end demo. In real deployment, connect a backend for payments, inventory, shipping and orders.
+            </p>
+            <div class="tag">Next: Stripe/Razorpay + Admin panel</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="small">Need help?</div>
+            <div style="font-weight:800; font-size:16px;">support@artmart.demo</div>
+            <div class="small">Mon–Sat, 10am–7pm</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer">
+        © <span id="year"></span> ArtMart • Curated &amp; owned by <strong>Harini</strong> • Replace sample data with real paintings
+      </div>
+    </main>
+  </div>
+
+  <div class="owner-badge" aria-hidden="true">Owned &amp; Curated by <strong>Harini</strong> 🎨</div>
+  <!-- Cart Drawer -->
+  <div class="overlay" id="overlay" onclick="closeCart()"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head">
+      <h3>Your Cart</h3>
+      <button class="modal-close" onclick="closeCart()">Close</button>
+    </div>
+    <div class="drawer-body">
+      <div id="cartItems"></div>
+    </div>
+    <div class="drawer-foot">
+      <div class="totals">
+        <span>Subtotal</span>
+        <strong id="cartSubtotal">₹0</strong>
+      </div>
+      <div class="checkout">
+        <button class="btn primary" onclick="checkout()">Proceed to Buy</button>
+        <button class="btn" onclick="seedDemoOrder()">Place Demo Order</button>
+        <button class="btn danger" onclick="clearCart()">Clear Cart</button>
+        <div class="small">Payments are demo-only in this template.</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Product Modal -->
+  <div class="modal" id="modal">
+    <div class="overlay show" onclick="closeModal()"></div>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="modal-img"><img id="modalImg" alt=""></div>
+      <div class="modal-info">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+          <div>
+            <h3 id="modalTitle"></h3>
+            <div class="rating">
+              <span class="stars" id="modalStars"></span>
+              <span id="modalRatingText"></span>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="price">
+          <div class="amt" id="modalPrice"></div>
+          <div class="mrp" id="modalMrp"></div>
+          <div class="prime" id="modalPrime"></div>
+        </div>
+
+        <div class="meta" style="margin-top:8px;">
+          <span id="modalCat"></span>
+          <span id="modalSize"></span>
+          <span id="modalFrame"></span>
+        </div>
+
+        <div class="divider"></div>
+
+        <p id="modalDesc"></p>
+
+        <div class="divider"></div>
+
+        <div class="specs">
+          <div><b>Material:</b> Artist-grade canvas + acrylic/oil</div>
+          <div><b>Finish:</b> Matte + UV varnish</div>
+          <div><b>Packaging:</b> Bubble wrap + hard box</div>
+          <div><b>Customization:</b> Sizes & color palette available</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn primary" id="modalAddBtn">Add to Cart</button>
+          <button class="btn" onclick="checkout()">Buy Now</button>
+        </div>
+
+        <div class="small" style="margin-top:10px;">
+          Note: Replace “demo order” with Razorpay/Stripe checkout in production.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------------------------
+    // Sample Products (Replace with real data)
+    // ---------------------------
+    const PRODUCTS = [
+      {
+        id: "p1",
+        title: "Golden Horizon — Abstract Canvas",
+        category: "Abstract",
+        size: "Large",
+        framed: true,
+        isNew: true,
+        prime: true,
+        price: 8999,
+        mrp: 11999,
+        rating: 4.7,
+        reviews: 128,
+        image: "art1.jpeg",
+        desc: "Warm abstract strokes with gold accents. Perfect for living rooms and office walls."
+      },
+      {
+        id: "p2",
+        title: "Forest Calm — Nature Painting",
+        category: "Nature",
+        size: "Medium",
+        framed: false,
+        isNew: false,
+        prime: true,
+        price: 3499,
+        mrp: 4999,
+        rating: 4.5,
+        reviews: 62,
+        image: "art2.jpeg",
+        desc: "Soothing greens and layered depth. Adds calm to bedrooms and reading corners."
+      },
+      {
+        id: "p3",
+        title: "Monochrome Muse — Minimal Canvas",
+        category: "Minimal",
+        size: "Small",
+        framed: true,
+        isNew: true,
+        prime: false,
+        price: 1799,
+        mrp: 2299,
+        rating: 4.3,
+        reviews: 31,
+        image: "art3.jpeg",
+        desc: "Clean minimal design with strong lines. Ideal for modern interiors."
+      },
+      {
+        id: "p4",
+        title: "Royal Portrait — Classic Style",
+        category: "Portrait",
+        size: "Medium",
+        framed: true,
+        isNew: false,
+        prime: true,
+        price: 5599,
+        mrp: 6999,
+        rating: 4.6,
+        reviews: 88,
+        image: "https://images.unsplash.com/photo-1526662092594-e98c1e356d6a?auto=format&fit=crop&w=1200&q=70",
+        desc: "A bold portrait with rich tones. A statement piece for feature walls."
+      },
+      {
+        id: "p5",
+        title: "Ocean Whisper — Nature Canvas",
+        category: "Nature",
+        size: "Large",
+        framed: false,
+        isNew: true,
+        prime: true,
+        price: 7999,
+        mrp: 9999,
+        rating: 4.8,
+        reviews: 203,
+        image: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1200&q=70",
+        desc: "Deep blues with soft highlights. Adds luxury feel to any space."
+      },
+      {
+        id: "p6",
+        title: "Sunset Blocks — Abstract",
+        category: "Abstract",
+        size: "Small",
+        framed: false,
+        isNew: false,
+        prime: false,
+        price: 1499,
+        mrp: 1999,
+        rating: 4.2,
+        reviews: 45,
+        image: "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=70",
+        desc: "Geometric abstract with sunset palette. Great for desks and studios."
+      },
+      {
+        id: "p7",
+        title: "Quiet Face — Portrait Sketch",
+        category: "Portrait",
+        size: "Small",
+        framed: true,
+        isNew: true,
+        prime: true,
+        price: 2199,
+        mrp: 2999,
+        rating: 4.4,
+        reviews: 57,
+        image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=70",
+        desc: "Expressive portrait sketch with subtle shading. Minimal yet powerful."
+      },
+      {
+        id: "p8",
+        title: "Line & Space — Minimal Canvas",
+        category: "Minimal",
+        size: "Medium",
+        framed: true,
+        isNew: false,
+        prime: true,
+        price: 3299,
+        mrp: 4299,
+        rating: 4.5,
+        reviews: 74,
+        image: "https://images.unsplash.com/photo-1452800185063-6db5e12b8e2e?auto=format&fit=crop&w=1200&q=70",
+        desc: "Minimal lines with balanced negative space. Suits Scandinavian styles."
+      },
+    ];
+
+    // ---------------------------
+    // State
+    // ---------------------------
+    const CART_KEY = "artmart_cart_v1";
+    let state = {
+      products: [...PRODUCTS],
+      filtered: [...PRODUCTS],
+      cart: loadCart(),
+      filters: {
+        categories: new Set(),
+        sizes: new Set(),
+        extras: new Set(),
+        priceMax: 25000,
+        search: "",
+        searchCategory: "all",
+        quick: "All"
+      }
+    };
+
+    // ---------------------------
+    // Helpers
+    // ---------------------------
+    function formatINR(n){
+      return "₹" + (n||0).toLocaleString("en-IN");
+    }
+    function stars(r){
+      const full = Math.floor(r);
+      const half = (r - full) >= 0.5 ? 1 : 0;
+      const empty = 5 - full - half;
+      return "★".repeat(full) + (half ? "☆" : "") + "✩".repeat(empty);
+    }
+    function loadCart(){
+      try{ return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }catch{ return []; }
+    }
+    function saveCart(){
+      localStorage.setItem(CART_KEY, JSON.stringify(state.cart));
+    }
+    function cartCount(){
+      return state.cart.reduce((a,i)=>a+i.qty,0);
+    }
+    function cartSubtotal(){
+      return state.cart.reduce((a,i)=>a + i.qty * i.price,0);
+    }
+
+    // ---------------------------
+    // Rendering
+    // ---------------------------
+    function render(){
+      document.getElementById("year").textContent = new Date().getFullYear();
+      document.getElementById("priceMaxLabel").textContent = formatINR(state.filters.priceMax);
+
+      // grid
+      const grid = document.getElementById("productGrid");
+      grid.innerHTML = "";
+      state.filtered.forEach(p=>{
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+          <div class="img">
+            <span class="badge">${p.category}${p.isNew ? " • New" : ""}</span>
+            <img src="${p.image}" alt="${escapeHtml(p.title)}" loading="lazy" />
+          </div>
+          <div class="content">
+            <div class="title" onclick="openProduct('${p.id}')">${escapeHtml(p.title)}</div>
+            <div class="rating">
+              <span class="stars">${stars(p.rating)}</span>
+              <span>${p.rating.toFixed(1)} (${p.reviews})</span>
+            </div>
+            <div class="price">
+              <div class="amt">${formatINR(p.price)}</div>
+              <div class="mrp">${formatINR(p.mrp)}</div>
+              ${p.prime ? `<div class="prime">Fast Delivery</div>` : ""}
+            </div>
+            <div class="meta">
+              <span>Size: <b>${p.size}</b></span>
+              <span>${p.framed ? "Framed" : "Unframed"}</span>
+            </div>
+            <div class="small">${escapeHtml(p.desc)}</div>
+            <div class="card-actions">
+              <button class="btn primary" onclick="addToCart('${p.id}')">Add to Cart</button>
+              <button class="btn" onclick="openProduct('${p.id}')">View</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(el);
+      });
+      document.getElementById("resultCount").textContent = state.filtered.length;
+
+      // cart ui
+      document.getElementById("cartCount").textContent = cartCount();
+      document.getElementById("cartSubtotal").textContent = formatINR(cartSubtotal());
+      document.getElementById("cartTotalTiny").textContent = formatINR(cartSubtotal());
+      renderCartItems();
+    }
+
+    function renderCartItems(){
+      const box = document.getElementById("cartItems");
+      if(state.cart.length === 0){
+        box.innerHTML = `<div class="small">Your cart is empty. Add some paintings 😊</div>`;
+        return;
+      }
+      box.innerHTML = "";
+      state.cart.forEach(item=>{
+        const row = document.createElement("div");
+        row.className = "cart-row";
+        row.innerHTML = `
+          <div class="thumb"><img src="${item.image}" alt="${escapeHtml(item.title)}"></div>
+          <div>
+            <div class="name">${escapeHtml(item.title)}</div>
+            <div class="line">${escapeHtml(item.category)} • ${escapeHtml(item.size)} • ${item.framed ? "Framed" : "Unframed"}</div>
+            <div class="line" style="margin-top:6px;"><b>${formatINR(item.price)}</b></div>
+            <div class="qty">
+              <button onclick="decQty('${item.id}')">−</button>
+              <span>${item.qty}</span>
+              <button onclick="incQty('${item.id}')">+</button>
+              <button class="btn" style="margin-left:auto; padding:6px 10px; border-radius:10px;" onclick="removeItem('${item.id}')">Remove</button>
+            </div>
+          </div>
+        `;
+        box.appendChild(row);
+      });
+    }
+
+    // ---------------------------
+    // Filtering/Search
+    // ---------------------------
+    function applyFilters(){
+      const catChecks = [...document.querySelectorAll(".catCheck:checked")].map(i=>i.value);
+      const sizeChecks = [...document.querySelectorAll(".sizeCheck:checked")].map(i=>i.value);
+      const extraChecks = [...document.querySelectorAll(".extraCheck:checked")].map(i=>i.value);
+      const priceMax = Number(document.getElementById("priceMax").value);
+
+      state.filters.categories = new Set(catChecks);
+      state.filters.sizes = new Set(sizeChecks);
+      state.filters.extras = new Set(extraChecks);
+      state.filters.priceMax = priceMax;
+
+      filterNow();
+    }
+
+    function filterNow(){
+      const f = state.filters;
+      const q = (f.search || "").toLowerCase().trim();
+      const qCat = f.searchCategory || "all";
+
+      state.filtered = state.products.filter(p=>{
+        if(p.price > f.priceMax) return false;
+
+        if(f.categories.size && !f.categories.has(p.category)) return false;
+        if(f.sizes.size && !f.sizes.has(p.size)) return false;
+
+        if(f.extras.has("Framed") && !p.framed) return false;
+        if(f.extras.has("New") && !p.isNew) return false;
+        if(f.extras.has("Prime") && !p.prime) return false;
+
+        if(f.quick !== "All"){
+          if(f.quick === "New" && !p.isNew) return false;
+          if(["Abstract","Nature","Portrait","Minimal"].includes(f.quick) && p.category !== f.quick) return false;
+        }
+
+        if(q){
+          const hay = (p.title + " " + p.desc + " " + p.category + " " + p.size).toLowerCase();
+          if(!hay.includes(q)) return false;
+          if(qCat !== "all" && p.category !== qCat) return false;
+        }
+
+        return true;
+      });
+
+      render();
+    }
+
+    function resetFilters(){
+      // uncheck checkboxes
+      document.querySelectorAll(".catCheck, .sizeCheck, .extraCheck").forEach(i=>i.checked=false);
+      document.getElementById("priceMax").value = 25000;
+      state.filters.categories = new Set();
+      state.filters.sizes = new Set();
+      state.filters.extras = new Set();
+      state.filters.priceMax = 25000;
+      filterNow();
+    }
+
+    function quickFilter(val, el){
+      state.filters.quick = val;
+      document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
+      if(el) el.classList.add("active");
+      filterNow();
+    }
+
+    // search
+    document.getElementById("searchBtn").addEventListener("click", ()=>{
+      state.filters.search = document.getElementById("searchInput").value;
+      state.filters.searchCategory = document.getElementById("searchCategory").value;
+      filterNow();
+    });
+    document.getElementById("searchInput").addEventListener("keydown",(e)=>{
+      if(e.key==="Enter"){
+        state.filters.search = document.getElementById("searchInput").value;
+        state.filters.searchCategory = document.getElementById("searchCategory").value;
+        filterNow();
+      }
+    });
+    document.getElementById("priceMax").addEventListener("input", ()=>{
+      document.getElementById("priceMaxLabel").textContent = formatINR(Number(document.getElementById("priceMax").value));
+    });
+
+    function toggleSidebarMobile(){
+      const sb = document.getElementById("sidebar");
+      if(getComputedStyle(sb).display === "none"){
+        sb.style.display = "block";
+      } else {
+        // on mobile, allow hide
+        if(window.innerWidth < 980) sb.style.display = "none";
+      }
+    }
+
+    // ---------------------------
+    // Product Modal
+    // ---------------------------
+    function openProduct(id){
+      const p = state.products.find(x=>x.id===id);
+      if(!p) return;
+      document.getElementById("modalImg").src = p.image;
+      document.getElementById("modalImg").alt = p.title;
+      document.getElementById("modalTitle").textContent = p.title;
+      document.getElementById("modalStars").textContent = stars(p.rating);
+      document.getElementById("modalRatingText").textContent = `${p.rating.toFixed(1)} (${p.reviews} ratings)`;
+      document.getElementById("modalPrice").textContent = formatINR(p.price);
+      document.getElementById("modalMrp").textContent = formatINR(p.mrp);
+      document.getElementById("modalPrime").textContent = p.prime ? "Fast Delivery" : "";
+      document.getElementById("modalCat").textContent = "Category: " + p.category;
+      document.getElementById("modalSize").textContent = "Size: " + p.size;
+      document.getElementById("modalFrame").textContent = p.framed ? "Framed" : "Unframed";
+      document.getElementById("modalDesc").textContent = p.desc;
+      document.getElementById("modalAddBtn").onclick = ()=> addToCart(p.id, true);
+
+      document.getElementById("modal").classList.add("show");
+    }
+    function closeModal(){
+      document.getElementById("modal").classList.remove("show");
+    }
+
+    // ---------------------------
+    // Cart
+    // ---------------------------
+    function addToCart(id, keepModalOpen=false){
+      const p = state.products.find(x=>x.id===id);
+      if(!p) return;
+      const existing = state.cart.find(x=>x.id===id);
+      if(existing) existing.qty += 1;
+      else state.cart.push({ ...p, qty: 1 });
+      saveCart();
+      render();
+      if(!keepModalOpen) openCart();
+    }
+    function incQty(id){
+      const it = state.cart.find(x=>x.id===id);
+      if(!it) return;
+      it.qty += 1;
+      saveCart();
+      render();
+    }
+    function decQty(id){
+      const it = state.cart.find(x=>x.id===id);
+      if(!it) return;
+      it.qty -= 1;
+      if(it.qty <= 0) state.cart = state.cart.filter(x=>x.id!==id);
+      saveCart();
+      render();
+    }
+    function removeItem(id){
+      state.cart = state.cart.filter(x=>x.id!==id);
+      saveCart();
+      render();
+    }
+    function clearCart(){
+      if(!confirm("Clear cart?")) return;
+      state.cart = [];
+      saveCart();
+      render();
+    }
+
+    function openCart(){
+      document.getElementById("overlay").classList.add("show");
+      document.getElementById("drawer").classList.add("show");
+    }
+    function closeCart(){
+      document.getElementById("overlay").classList.remove("show");
+      document.getElementById("drawer").classList.remove("show");
+    }
+
+    function checkout(){
+      if(state.cart.length===0){
+        alert("Your cart is empty.");
+        return;
+      }
+      alert("Demo checkout. In production, integrate Razorpay/Stripe and create an order in database.");
+    }
+
+    function seedDemoOrder(){
+      if(state.cart.length===0){
+        alert("Add at least 1 item to place a demo order.");
+        return;
+      }
+      alert("✅ Demo order placed! (This is a front-end template.)");
+    }
+
+    // ---------------------------
+    // Small helpers
+    // ---------------------------
+    function goHome(){
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+    function scrollToSection(id){
+      const el = document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // init
+    function init(){
+      state.filters.search = "";
+      state.filters.searchCategory = "all";
+      state.filters.quick = "All";
+      state.filters.priceMax = 25000;
+      filterNow();
+      render();
+    }
+    init();
+  </script>
+</body>
+</html>
